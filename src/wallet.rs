@@ -29,6 +29,20 @@ impl HDWallet {
             HDWallet::Tron(seed) => tron_address_by_index(seed, index),
         }
     }
+
+    pub fn private(&self, index: i32) -> String {
+        match self {
+            HDWallet::Ethereum(seed) => eth_private_by_index(seed, index),
+            HDWallet::Tron(seed) => tron_private_by_index(seed, index),
+        }
+    }
+
+    pub fn public(&self, index: i32) -> String {
+        match self {
+            HDWallet::Ethereum(seed) => eth_public_by_index(seed, index),
+            HDWallet::Tron(seed) => tron_public_by_index(seed, index),
+        }
+    }
 }
 
 #[derive(Debug, Serialize, Deserialize, Clone)]
@@ -83,6 +97,48 @@ fn tron_address_by_index(seed: &HDSeed, index: i32) -> String {
         &DerivationPath::from_str(&hd_path_str).unwrap(),
     );
     extended_pubk_to_addr_tron(&pubk)
+}
+
+fn eth_private_by_index(seed: &HDSeed, index: i32) -> String {
+    let hd_path_str = format!("m/44'/60'/0'/0/{index}");
+    let seed_m = Seed::new(&seed.mnemonic, "");
+    let (pk, _) = get_extended_keypair(
+        seed_m.as_bytes(),
+        &DerivationPath::from_str(&hd_path_str).unwrap(),
+    );
+    let pk_str = pk.private_key.display_secret().to_string();
+    pk_str
+}
+
+fn tron_private_by_index(seed: &HDSeed, index: i32) -> String {
+    let hd_path_str = format!("m/44'/195'/0'/0/{index}");
+    let seed_m = Seed::new(&seed.mnemonic, "");
+    let (pk, _) = get_extended_keypair(
+        seed_m.as_bytes(),
+        &DerivationPath::from_str(&hd_path_str).unwrap(),
+    );
+    let pk_str = pk.private_key.display_secret().to_string();
+    pk_str
+}
+
+fn eth_public_by_index(seed: &HDSeed, index: i32) -> String {
+    let hd_path_str = format!("m/44'/60'/0'/0/{index}");
+    let seed_m = Seed::new(&seed.mnemonic, "");
+    let (_, pubk) = get_extended_keypair(
+        seed_m.as_bytes(),
+        &DerivationPath::from_str(&hd_path_str).unwrap(),
+    );
+    pubk.public_key.to_string()
+}
+
+fn tron_public_by_index(seed: &HDSeed, index: i32) -> String {
+    let hd_path_str = format!("m/44'/195'/0'/0/{index}");
+    let seed_m = Seed::new(&seed.mnemonic, "");
+    let (_, pubk) = get_extended_keypair(
+        seed_m.as_bytes(),
+        &DerivationPath::from_str(&hd_path_str).unwrap(),
+    );
+    pubk.public_key.to_string()
 }
 
 fn get_extended_keypair(
