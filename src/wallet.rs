@@ -13,7 +13,6 @@ use secp256k1::Secp256k1;
 use serde::{Deserialize, Serialize};
 use sha3::{Digest, Keccak256};
 
-
 pub enum HDWallet {
     Ethereum(HDSeed),
     Tron(HDSeed),
@@ -127,7 +126,6 @@ fn extended_pubk_to_addr_tron(pubk: &ExtendedPubKey) -> String {
     let experimental_addr = "41".to_owned() + &k_addr[24..];
     let hex_exp_addr = hex::decode(&experimental_addr).unwrap();
     let s_hex_exp_addr = hex_exp_addr.as_slice();
-    //let exp_k_addr_b = hex::de(&experimental_addr).unwrap();
     let val0 = digest(s_hex_exp_addr);
     let hex_val0 = hex::decode(val0).unwrap();
     let s_hex_val0 = hex_val0.as_slice();
