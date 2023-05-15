@@ -4,7 +4,6 @@ pub mod wallet;
 mod tests {
     use crate::wallet::HDSeed;
     use crate::wallet::HDWallet;
-    use bip39::{Language, Mnemonic};
 
     #[test]
     fn test_wallet() {
@@ -31,16 +30,9 @@ mod tests {
             "6de12bbe8e09b7ef5d1e34becd5f554f2e11e8ebae4a48ebf2a2c63ccc074f30",
         ];
 
-
-        let mnemonic = Mnemonic::from_phrase(
-            "debris resemble coil soul shrimp slender deal aunt twenty gown fee test",
-            Language::English,
-        )
-        .unwrap();
-        let hdw_eth = HDWallet::Ethereum(HDSeed {
-            mnemonic: mnemonic.clone(),
-        });
-        let hdw_tron = HDWallet::Tron(HDSeed { mnemonic });
+        let phrase = "debris resemble coil soul shrimp slender deal aunt twenty gown fee test";
+        let hdw_eth = HDWallet::Ethereum(HDSeed::new(phrase));
+        let hdw_tron = HDWallet::Tron(HDSeed::new(phrase));
         for i in 0..3 {
             let eth_i = hdw_eth.address(i as i32);
             let tron_i = hdw_tron.address(i as i32);

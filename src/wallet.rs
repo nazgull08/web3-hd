@@ -1,6 +1,7 @@
 use std::str::FromStr;
 
 use ::sha256::digest;
+use bip39::Language;
 use bip39::{Mnemonic, Seed};
 use bitcoin::base58;
 use bitcoin::bip32::ExtendedPubKey;
@@ -21,6 +22,14 @@ pub enum HDWallet {
 pub struct HDSeed {
     pub mnemonic: Mnemonic,
 }
+
+impl HDSeed {
+    pub fn new(phrase: &str) -> Self {
+        let mnemonic = Mnemonic::from_phrase(phrase, Language::English).unwrap();
+        HDSeed { mnemonic }
+    }
+}
+
 //NTD add funcion for save key to file
 impl HDWallet {
     pub fn address(&self, index: i32) -> String {
@@ -106,8 +115,7 @@ fn eth_private_by_index(seed: &HDSeed, index: i32) -> String {
         seed_m.as_bytes(),
         &DerivationPath::from_str(&hd_path_str).unwrap(),
     );
-    let pk_str = pk.private_key.display_secret().to_string();
-    pk_str
+    pk.private_key.display_secret().to_string()
 }
 
 fn tron_private_by_index(seed: &HDSeed, index: i32) -> String {
@@ -117,8 +125,7 @@ fn tron_private_by_index(seed: &HDSeed, index: i32) -> String {
         seed_m.as_bytes(),
         &DerivationPath::from_str(&hd_path_str).unwrap(),
     );
-    let pk_str = pk.private_key.display_secret().to_string();
-    pk_str
+    pk.private_key.display_secret().to_string()
 }
 
 fn eth_public_by_index(seed: &HDSeed, index: i32) -> String {
