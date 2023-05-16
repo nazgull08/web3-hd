@@ -14,11 +14,13 @@ use secp256k1::Secp256k1;
 use serde::{Deserialize, Serialize};
 use sha3::{Digest, Keccak256};
 
+#[derive(Debug, Clone)]
 pub enum HDWallet {
     Ethereum(HDSeed),
     Tron(HDSeed),
 }
 
+#[derive(Debug, Clone) ]
 pub struct HDSeed {
     pub mnemonic: Mnemonic,
 }
@@ -54,7 +56,7 @@ impl HDWallet {
     }
 }
 
-#[derive(Debug, Serialize, Deserialize, Clone)]
+#[derive(Debug, Serialize, Deserialize, Clone, PartialEq)]
 pub struct EthAddr(String);
 
 impl EthAddr {
