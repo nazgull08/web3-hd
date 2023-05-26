@@ -18,6 +18,7 @@ use sha3::{Digest, Keccak256};
 pub enum HDWallet {
     Ethereum(HDSeed),
     Tron(HDSeed),
+    Stellar(HDSeed),
 }
 
 #[derive(Debug, Clone) ]
@@ -38,6 +39,7 @@ impl HDWallet {
         match self {
             HDWallet::Ethereum(seed) => eth_address_by_index(seed, index),
             HDWallet::Tron(seed) => tron_address_by_index(seed, index),
+            HDWallet::Stellar(seed) => tron_address_by_index(seed, index),
         }
     }
 
@@ -45,6 +47,7 @@ impl HDWallet {
         match self {
             HDWallet::Ethereum(seed) => eth_private_by_index(seed, index),
             HDWallet::Tron(seed) => tron_private_by_index(seed, index),
+            HDWallet::Stellar(seed) => tron_private_by_index(seed, index),
         }
     }
 
@@ -52,6 +55,7 @@ impl HDWallet {
         match self {
             HDWallet::Ethereum(seed) => eth_public_by_index(seed, index),
             HDWallet::Tron(seed) => tron_public_by_index(seed, index),
+            HDWallet::Stellar(seed) => tron_public_by_index(seed, index),
         }
     }
 }
