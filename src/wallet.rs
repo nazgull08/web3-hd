@@ -114,6 +114,17 @@ fn tron_address_by_index(seed: &HDSeed, index: i32) -> String {
     extended_pubk_to_addr_tron(&pubk)
 }
 
+fn stellar_address_by_index(seed: &HDSeed, index: i32) -> String {
+    let hd_path_str = format!("m/44'/148'/0'/0/{index}");
+    let seed_m = Seed::new(&seed.mnemonic, "");
+    let (_pk, pubk) = get_extended_keypair(
+        seed_m.as_bytes(),
+        &DerivationPath::from_str(&hd_path_str).unwrap(),
+    );
+    let eth_addr = extended_pubk_to_addr_stellar(&pubk);
+    eth_addr.get().to_owned()
+}
+
 fn eth_private_by_index(seed: &HDSeed, index: i32) -> String {
     let hd_path_str = format!("m/44'/60'/0'/0/{index}");
     let seed_m = Seed::new(&seed.mnemonic, "");
@@ -183,6 +194,30 @@ fn extended_pubk_to_addr(pubk: &ExtendedPubKey) -> EthAddr {
 }
 
 fn extended_pubk_to_addr_tron(pubk: &ExtendedPubKey) -> String {
+    //massage into the right format
+    let pubk_str = pubk.public_key.to_string();
+    let pubk_secp = secp256k1::PublicKey::from_str(&pubk_str).unwrap();
+    //format as uncompressed key, remove "04" in the beginning
+    let pubk_uncomp = &PublicKey::new_uncompressed(pubk_secp).to_string()[2..];
+    //decode from hex and pass to keccak for hashing
+    let pubk_bytes = hex::decode(pubk_uncomp).unwrap();
+    let k_addr = &keccak_hash(&pubk_bytes);
+    //keep last 20 bytes of the result
+    let experimental_addr = "41".to_owned() + &k_addr[24..];
+    let hex_exp_addr = hex::decode(&experimental_addr).unwrap();
+    let s_hex_exp_addr = hex_exp_addr.as_slice();
+    let val0 = digest(s_hex_exp_addr);
+    let hex_val0 = hex::decode(val0).unwrap();
+    let s_hex_val0 = hex_val0.as_slice();
+    let val1 = digest(s_hex_val0);
+    let check_sum_val1 = &val1[0..8];
+    let final_addr = experimental_addr + check_sum_val1;
+    let final_addr_bytes = hex::decode(final_addr).unwrap();
+
+    base58::encode(&final_addr_bytes)
+}
+
+fn extended_pubk_to_addr_stellar(pubk: &ExtendedPubKey) -> String {
     //massage into the right format
     let pubk_str = pubk.public_key.to_string();
     let pubk_secp = secp256k1::PublicKey::from_str(&pubk_str).unwrap();
