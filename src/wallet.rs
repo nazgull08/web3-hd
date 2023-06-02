@@ -121,8 +121,7 @@ fn stellar_address_by_index(seed: &HDSeed, index: i32) -> String {
         seed_m.as_bytes(),
         &DerivationPath::from_str(&hd_path_str).unwrap(),
     );
-    let eth_addr = extended_pubk_to_addr_stellar(&pubk);
-    eth_addr.get().to_owned()
+    extended_pubk_to_addr_stellar(&pubk)
 }
 
 fn eth_private_by_index(seed: &HDSeed, index: i32) -> String {
