@@ -192,6 +192,21 @@ fn extended_pubk_to_addr(pubk: &ExtendedPubKey) -> EthAddr {
     EthAddr::new(addr)
 }
 
+pub fn partial_address_to_addr_tron(partial_address: &str) -> String {
+    let hex_exp_addr = hex::decode(partial_address).unwrap();
+    let s_hex_exp_addr = hex_exp_addr.as_slice();
+    let val0 = digest(s_hex_exp_addr);
+    let hex_val0 = hex::decode(val0).unwrap();
+    let s_hex_val0 = hex_val0.as_slice();
+    let val1 = digest(s_hex_val0);
+    let check_sum_val1 = &val1[0..8];
+    let final_addr = partial_address.to_owned() + check_sum_val1;
+    let final_addr_bytes = hex::decode(final_addr).unwrap();
+
+    base58::encode(&final_addr_bytes)
+
+}
+
 fn extended_pubk_to_addr_tron(pubk: &ExtendedPubKey) -> String {
     //massage into the right format
     let pubk_str = pubk.public_key.to_string();
