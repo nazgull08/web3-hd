@@ -249,3 +249,17 @@ where
     let result = hasher.finalize();
     hex::encode(result)
 }
+
+
+fn get_private(
+    seed: &[u8],
+    hd_path: &DerivationPath,
+) -> (ExtendedPrivKey, ExtendedPubKey) {
+    let secp = Secp256k1::new();
+    let pk = ExtendedPrivKey::new_master(Network::Bitcoin, seed)
+        // we convert HD Path to bitcoin lib format (DerivationPath)
+        .and_then(|k| k.derive_priv(&secp, hd_path))
+        .unwrap();
+    let pubk = ExtendedPubKey::from_priv(&secp, &pk);
+    (pk, pubk)
+}
